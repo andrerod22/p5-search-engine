@@ -2,46 +2,43 @@
 """Reduce 1."""
 import sys
 import itertools
-from collections import defaultdict
+
+
 # Read the document count from Job 0: 
 
 def reduce_one_group(key, group):
     """Reduce one group."""
-    normalization_sums = defaultdict(dict)
     #for each document sum up the all its (tfiks * idfks)
 
-    doc_count = 0 #n_k
     prev_doc_id = None
     words = [line for line in group]
     if len(words) == 1:
         doc_id = words[0].split('\t')[1]
         idfk = words[0].split('\t')[3]
-        # (tf_ik * idfk)^2
-        normalization_sums[doc_id] += pow(1 * float(idfk), 2)
-        sys.stdout.write(f"{key}\t{doc_id}\t{1}\n") 
+        sys.stdout.write(f"{key}\t{doc_id}\t{1}\t{idfk}") 
     else:
-        breakpoint()
+        # we don't want to lose tf_ik
         prev_doc_id = words[0].split("\t")[1]
         tf_ik = 1 # for the first iteration
         for word in words[1:]:
             doc_id = word.split("\t")[1]
             if doc_id != prev_doc_id:
                 idfk = word.split("\t")[3]
-                normalization_sums[doc_id] += pow(tf_ik * idfk, 2)
-                # sys.stdout.write(f"{key}\t{prev_doc_id}\t{tf_ik}\n")
+                # normalization_sums[doc_id] += pow(idfk * tf_ik, 2)
+                sys.stdout.write(f"{key}\t{prev_doc_id}\t{tf_ik}\t{idfk}")
                 prev_doc_id = doc_id
                 tf_ik = 1
             else:
                 tf_ik += 1
         doc_id = words[-1].split("\t")[1]
         idfk = word.split("\t")[3]
-        normalization_sums[doc_id] += pow(tf_ik * idfk, 2)
-        # sys.stdout.write(f"{key}\t{doc_id}\t{tf_ik}\n")
+        sys.stdout.write(f"{key}\t{doc_id}\t{tf_ik}\t{idfk}")
+    
 
 """input: <term> <doc_id> <1> <idfk>"""
 # do we ever use the 1 ? --^
 """write based doc_id, doc_id % 3 """
-"""output: <term> <doc_id> <idfk> <freq (tf_ik)> <normalization_factor> """
+"""output: <term> <doc_id> <freq (tf_ik)> <idfk>"""
 
 def keyfunc(line):
     """Return the key from a TAB-delimited key-value pair."""

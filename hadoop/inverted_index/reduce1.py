@@ -14,7 +14,6 @@ with open("total_document_count.txt", 'r') as count:
 def reduce_one_group(key, group):
     """Reduce one group."""
     # Possible Optimation: use less memory 
-    word_count = 0
     doc_count = 0 #n_k
     prev_doc_id = None
     length = 0
