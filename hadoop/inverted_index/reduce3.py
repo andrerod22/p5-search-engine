@@ -4,7 +4,6 @@ import sys
 import itertools
 import math
 import csv
-import pdb
 import os, glob
 from collections import defaultdict
 
@@ -18,13 +17,14 @@ def output_final(terms):
     # iterate through each term
     # terms = [term for term in group]
     normalization_sums = defaultdict(int)
-    # breakpoint()
     for line in terms:
         idfk = line.split("\t")[-1].replace("\n", "")
         tf_ik = line.split("\t")[-2]
         doc_id = line.split("\t")[1]
         normalization_sums[doc_id] += pow(float(idfk) * float(tf_ik), 2)
     
+    for value in normalization_sums:
+        print("values " + value + ": " + str(normalization_sums[value]))
     dir = 'output'
     if not os.path.exists(dir):
         os.makedirs(dir)
@@ -34,17 +34,18 @@ def output_final(terms):
             os.remove(f)
     with open('output/part00000', 'a') as a, open('output/part00001', 'a') as b, open("output/part00002", 'a') as c:
         for term in terms:
-            doc_id = int(line.split("\t")[1])
-            tf_ik = line.split("\t")[-2]
-            idfk = line.split("\t")[-1].replace("\n", "")
-            normalization = normalization_sums[doc_id]
-            # breakpoint()
+            word = term.split("\t")[0]
+            doc_id = int(term.split("\t")[1])
+            tf_ik = term.split("\t")[-2]
+            idfk = term.split("\t")[-1].replace("\n", "")
+            normalization = normalization_sums[str(doc_id)]
+            # print("docid: " + str(doc_id) + " : " + str(normalization))
             if doc_id % 3 == 0:
-                a.write(f"{term}\t{idfk}\t{doc_id}\t{tf_ik}\t{normalization}\n")
+                a.write(f"{word} {idfk} {doc_id} {tf_ik} {normalization}\n")
             elif doc_id % 3 == 1:
-                b.write(f"{term}\t{idfk}\t{doc_id}\t{tf_ik}\t{normalization}\n")
+                b.write(f"{word} {idfk} {doc_id} {tf_ik} {normalization}\n")
             else:
-                c.write(f"{term}\t{idfk}\t{doc_id}\t{tf_ik}\t{normalization}\n")
+                c.write(f"{word} {idfk} {doc_id} {tf_ik} {normalization}\n")
 
 """input: <term> <doc_id> <freq (tf_ik)> <idfk>"""
 """output: <term> <idfk> <doc_id> <tf_ik> <normalization> """
@@ -54,6 +55,7 @@ def main():
     # pipeline_input = sys.stdin
     # sys.stdin = open("/dev/tty")
     inputs = [line for line in sys.stdin]
+
     output_final(inputs)
 
     # for key, group in itertools.groupby(pipeline_input, keyfunc):

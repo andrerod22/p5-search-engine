@@ -17,9 +17,10 @@ for line in pipeline_input:
     doc_id = line[0]
     doc_title = str(line[1].split())
     doc_body = str(line[2].split())
+    # print(doc_body)
     # Remove non-alphanumeric characters (that also aren’t spaces)
-    doc_title = re.sub(r"[^a-zA-Z0-9]+", " ", doc_title).casefold().split()
-    doc_body = re.sub(r"[^a-zA-Z0-9]+", " ", doc_body).casefold().split()
+    doc_title = re.sub(r"[^a-zA-Z0-9 ]+", "", doc_title).casefold().split()
+    doc_body = re.sub(r"[^a-zA-Z0-9 ]+", "", doc_body).casefold().split()
     terms = doc_title + doc_body
     for term in terms:
         if term+"\n" not in stop_words:

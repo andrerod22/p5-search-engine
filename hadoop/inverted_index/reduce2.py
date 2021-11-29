@@ -9,9 +9,8 @@ import itertools
 def reduce_one_group(key, group):
     """Reduce one group."""
     #for each document sum up the all its (tfiks * idfks)
-
     prev_doc_id = None
-    words = [line for line in group]
+    words = list(group)
     if len(words) == 1:
         doc_id = words[0].split('\t')[1]
         idfk = words[0].split('\t')[3]
