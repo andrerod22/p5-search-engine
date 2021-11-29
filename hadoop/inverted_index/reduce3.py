@@ -22,17 +22,15 @@ def output_final(terms):
         tf_ik = line.split("\t")[-2]
         doc_id = line.split("\t")[1]
         normalization_sums[doc_id] += pow(float(idfk) * float(tf_ik), 2)
-    
-    for value in normalization_sums:
-        print("values " + value + ": " + str(normalization_sums[value]))
+
     dir = 'output'
     if not os.path.exists(dir):
         os.makedirs(dir)
-    else:
-        filelist = glob.glob(os.path.join(dir, "*"))
-        for f in filelist:
-            os.remove(f)
-    with open('output/part00000', 'a') as a, open('output/part00001', 'a') as b, open("output/part00002", 'a') as c:
+    # else:
+    #     filelist = glob.glob(os.path.join(dir, "*"))
+    #     for f in filelist:
+    #         os.remove(f)
+    with open('output/part-00000', 'a') as a, open('output/part-00001', 'a') as b, open("output/part-00002", 'a') as c:
         for term in terms:
             word = term.split("\t")[0]
             doc_id = int(term.split("\t")[1])
