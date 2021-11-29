@@ -26,24 +26,14 @@ def output_final(terms):
     dir = 'output'
     if not os.path.exists(dir):
         os.makedirs(dir)
-    # else:
-    #     filelist = glob.glob(os.path.join(dir, "*"))
-    #     for f in filelist:
-    #         os.remove(f)
-    with open('output/part-00000', 'a') as a, open('output/part-00001', 'a') as b, open("output/part-00002", 'a') as c:
-        for term in terms:
-            word = term.split("\t")[0]
-            doc_id = int(term.split("\t")[1])
-            tf_ik = term.split("\t")[-2]
-            idfk = term.split("\t")[-1].replace("\n", "")
-            normalization = normalization_sums[str(doc_id)]
-            # print("docid: " + str(doc_id) + " : " + str(normalization))
-            if doc_id % 3 == 0:
-                a.write(f"{word} {idfk} {doc_id} {tf_ik} {normalization}\n")
-            elif doc_id % 3 == 1:
-                b.write(f"{word} {idfk} {doc_id} {tf_ik} {normalization}\n")
-            else:
-                c.write(f"{word} {idfk} {doc_id} {tf_ik} {normalization}\n")
+
+    for term in terms:
+        word = term.split("\t")[0]
+        doc_id = int(term.split("\t")[1])
+        tf_ik = term.split("\t")[-2]
+        idfk = term.split("\t")[-1].replace("\n", "")
+        normalization = normalization_sums[str(doc_id)]
+        sys.stdout.write(f"{word}\t{idfk}\t{doc_id}\t{tf_ik}\t{normalization}\n")
 
 """input: <term> <doc_id> <freq (tf_ik)> <idfk>"""
 """output: <term> <idfk> <doc_id> <tf_ik> <normalization> """
