@@ -56,6 +56,7 @@ hadoop \
 
 # REMINDER: don't forget to set -numReduceTasks in your last stage.  You'll
 # need this to generate the correct number of inverted index segments.
+# cat output2/*
 
 hadoop \
   jar ../hadoop-streaming-2.7.2.jar \
@@ -65,6 +66,8 @@ hadoop \
   -reducer ./reduce3.py
 
 # Last job: Job 4
+
+
 hadoop \
   jar ../hadoop-streaming-2.7.2.jar \
   -input output3 \

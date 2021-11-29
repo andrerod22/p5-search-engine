@@ -4,6 +4,7 @@ from pathlib import Path
 import shutil
 import utils
 from utils import TEST_DIR
+import pdb
 
 
 def test_doc_count_one_mapper():
@@ -61,7 +62,7 @@ def test_simple():
     # Set total document count to be 2
     doc_count_filename = tmpdir/"total_document_count.txt"
     Path(doc_count_filename).write_text("2", encoding='utf-8')
-
+    # breakpoint()
     # Start pipeline mapreduce job, with 1 mapper and 1 reducer
     with utils.CD(tmpdir):
         pipeline = utils.Pipeline(

@@ -6,4 +6,5 @@ import pdb
 import csv
 
 for line in sys.stdin:
-    sys.stdout.write(line)
+    doc_id = line.split("\t")[1]
+    sys.stdout.write(doc_id + "\t" + line)

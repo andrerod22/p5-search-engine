@@ -12,24 +12,21 @@ total_docs = 0
 with open("total_document_count.txt", 'r') as count:
     total_docs = int(count.readline().split("\n")[0])
 
-def output_final(terms):
+def reduce_one_group(key, group):
     """Reduce one group."""
     # iterate through each term
     # terms = [term for term in group]
     normalization_sums = defaultdict(int)
+    terms = list(group)
     for line in terms:
         idfk = line.split("\t")[-1].replace("\n", "")
         tf_ik = line.split("\t")[-2]
-        doc_id = line.split("\t")[1]
+        doc_id = line.split("\t")[0]
         normalization_sums[doc_id] += pow(float(idfk) * float(tf_ik), 2)
-
-    # dir = 'output'
-    # if not os.path.exists(dir):
-    #     os.makedirs(dir)
-
+    # breakpoint()
     for term in terms:
-        word = term.split("\t")[0]
-        doc_id = int(term.split("\t")[1])
+        word = term.split("\t")[1]
+        doc_id = int(term.split("\t")[2])
         tf_ik = term.split("\t")[-2]
         idfk = term.split("\t")[-1].replace("\n", "")
         normalization = normalization_sums[str(doc_id)]
@@ -38,13 +35,16 @@ def output_final(terms):
 """input: <term> <doc_id> <freq (tf_ik)> <idfk>"""
 """output: <term> <idfk> <doc_id> <tf_ik> <normalization> """
 
+def keyfunc(line):
+    """Return the key from a TAB-delimited key-value pair."""
+    return line.partition("\t")[0]
+
 def main():
     """Divide sorted lines into groups that share a key."""
-    # pipeline_input = sys.stdin
-    # sys.stdin = open("/dev/tty")
-    inputs = [line for line in sys.stdin]
-
-    output_final(inputs)
+    pipeline_input = sys.stdin
+    sys.stdin = open("/dev/tty")
+    for key, group in itertools.groupby(pipeline_input, keyfunc):
+        reduce_one_group(key, group)
 
     # for key, group in itertools.groupby(pipeline_input, keyfunc):
     #     reduce_one_group(key, group)
