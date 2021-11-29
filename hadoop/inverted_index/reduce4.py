@@ -12,7 +12,7 @@ def reduce_one_group(key, group):
         doc_id = line.split("\t")[-3]
         idfk = line.split("\t")[-4]
         word = line.split("\t")[-5]
-        sys.stdout.write(f"{key} {word} {idfk} {doc_id} {tf_ik} {normalization}\n")
+        sys.stdout.write(f"{word} {idfk} {doc_id} {tf_ik} {normalization}\n")
 
 
 def keyfunc(line):

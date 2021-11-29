@@ -23,9 +23,9 @@ def output_final(terms):
         doc_id = line.split("\t")[1]
         normalization_sums[doc_id] += pow(float(idfk) * float(tf_ik), 2)
 
-    dir = 'output'
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+    # dir = 'output'
+    # if not os.path.exists(dir):
+    #     os.makedirs(dir)
 
     for term in terms:
         word = term.split("\t")[0]
