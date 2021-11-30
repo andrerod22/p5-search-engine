@@ -6,13 +6,35 @@ import itertools
 
 def reduce_one_group(key, group):
     """Reduce one group."""
-    for line in group:
+    # one group should be one key. ex: doc_id % 3 = 0.
+    # if doc_id % 3 = 0, then all should map to part-0
+    
+    term_dic = {}
+    terms = list(group)
+    for line in terms:
         normalization = line.split("\t")[-1].replace("\n", "")
         tf_ik = line.split("\t")[-2]
         doc_id = line.split("\t")[-3]
         idfk = line.split("\t")[-4]
         word = line.split("\t")[-5]
-        sys.stdout.write(f"{word} {idfk} {doc_id} {tf_ik} {normalization}\n")
+        term_info = [doc_id, tf_ik, normalization]
+        if word in term_dic:
+            term_dic[word].extend(term_info)
+        else:
+            #the first time we see a word. 
+            term_info.insert(0, idfk)
+            term_dic[word] = term_info
+        # sys.stdout.write(f"{word} {idfk} {doc_id} {tf_ik} {normalization}\n")
+    for term in terms:
+        word = term.split("\t")[-5]
+        if word in term_dic:
+            sys.stdout.write(f"{word} ")
+            for i, num in enumerate(term_dic[word]):
+                sys.stdout.write(f"{num}")
+                if i != len(term_dic[word]) - 1:
+                    sys.stdout.write(" ")
+            sys.stdout.write("\n")
+            term_dic.pop(word)
 
 
 def keyfunc(line):

@@ -280,6 +280,7 @@ def test_segments():
         output_dir = pipeline.get_output_dir()
 
     # Verify output
+    # breakpoint()
     utils.assert_inverted_index_segments_eq(
         output_dir,
         TEST_DIR/"testdata/test_pipeline14/expected",

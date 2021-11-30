@@ -97,6 +97,8 @@ def assert_inverted_index_eq(path1, path2):
     # one idf value and one or more hits.  Each hit is represented by 3
     # numbers: doc id, number of occurrences of the term, and normalization
     # factor.
+
+    #len of lines is not equal. 
     for line1, line2 in zip(lines1, lines2):
         line1 = line1.strip()
         line2 = line2.strip()
