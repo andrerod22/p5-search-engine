@@ -58,7 +58,15 @@ def list_services():
 def handle_query():
     query = flask.request.args.get('q')
     query = clean(query)
-    print(query)
+    
+    # order documents by relevance 
+    # rank by score: how many terms does the doc have out of total query terms?
+    
+
+    # order documents by doc_id
+    # ideas: use sort(), custom comparator. 
+
+
     return {"status" : "ok"}
 
 def clean(dirty):
