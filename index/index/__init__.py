@@ -1,11 +1,13 @@
 """Index package initializer."""
 import flask
+import os
 
 # app is a single object used by all the code modules in this package
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
 
 # Read settings from config module (insta485/config.py)
 # app.config.from_object('index.config')
+app.config["INDEX_PATH"] = os.getenv("INDEX_PATH")
 
 # Overlay settings read from a Python file whose path is set in the environment
 # variable INSTA485_SETTINGS. Setting this environment variable is optional.
