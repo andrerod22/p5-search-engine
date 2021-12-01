@@ -109,6 +109,7 @@ def handle_query():
     # 3) TODO calculate the vector for each document and calculate the score. 
     # refer to spec for calculations. 
 
+    scores = {} # maps doc_id to its score. Maybe use a priority queue for automatic sorting.
     for doc in matched_docs:
         # doc is a doc_id. 
         pass
