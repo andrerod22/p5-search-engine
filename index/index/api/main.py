@@ -108,11 +108,21 @@ def handle_query():
 
     # 3) TODO calculate the vector for each document and calculate the score. 
     # refer to spec for calculations. 
+    # https://eecs485staff.github.io/p5-search-engine/#appendix-a-tfidf-calculation-walkthrough
 
-    scores = {} # maps doc_id to its score. Maybe use a priority queue for automatic sorting.
-    for doc in matched_docs:
-        # doc is a doc_id. 
-        pass
+    doc_scores = defaultdict(float) # maps doc_id to its dot product (as of now). 
+    counter = 0
+    for word in query:
+        idf = query_info[word]
+        for doc in matched_docs:
+            # doc is a doc_id
+            tf = matched_docs[doc][0]
+            pos = float(tf) * float(idf)
+            doc_scores[doc] += query_vec[counter] * pos 
+        counter += 1
+            
+            
+
     
 
 
