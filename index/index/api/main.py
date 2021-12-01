@@ -23,7 +23,6 @@ def read_stopwords(index_dir):
         for line in input:
             line = line.replace("\n", "")
             stop_words.add(line)
-    print(stop_words)
 
 def read_pagerank(index_dir):
     page_path = pathlib.Path(index_dir/"pagerank.out")
@@ -44,3 +43,11 @@ def read_inverted_index(index_dir):
             # Sets the term as the key, and
             # the other numbers in the list as value
             inverted_index[line[0]] = line[1:]
+
+@index.app.route('/api/v1/', methods=["GET"])
+def list_services():
+    context = {
+        "hits": "/api/v1/hits/",
+        "url": "/api/v1/"
+    }
+    return flask.jsonify(**context)
