@@ -1,6 +1,7 @@
 import flask
 import pathlib
 import index
+import re
 
 stop_words = set()
 page_rank = {}
@@ -18,9 +19,9 @@ def startup():
 def read_stopwords(index_dir):
     """Read stopwords."""
     page_path = pathlib.Path(index_dir/"stopwords.txt")
-    with open(page_path, mode='r') as s:
-        input = s.readlines()
-        for line in input:
+    with open(page_path, 'r') as input:
+        lines = input.readlines()
+        for line in lines:
             line = line.replace("\n", "")
             stop_words.add(line)
 
@@ -51,3 +52,22 @@ def list_services():
         "url": "/api/v1/"
     }
     return flask.jsonify(**context)
+
+
+@index.app.route('/api/v1/hits/', methods=["GET"])
+def handle_query():
+    query = flask.request.args.get('q')
+    query = clean(query)
+    print(query)
+    return {"status" : "ok"}
+
+def clean(dirty):
+    #This function was tricky for no reason. 
+    dirty = re.sub(r"[^a-zA-Z0-9 ]+", "", dirty).casefold().split()
+    clean = []
+    counter = 0
+    while(counter < len(dirty)):
+        if dirty[counter] not in stop_words:
+            clean.append(dirty[counter])
+        counter+=1
+    return clean
