@@ -64,11 +64,8 @@ def handle_query():
     # 1) Get documents that have every word in the cleaned query.
     matched_docs = {} # maps doc_id to [term freq, norm_factor] for a term.
     query_info = {} # used to map term (word) to idf
-    # first pass is unique to populate matched_docs
-    firstpass = True
     for word in query:
         # get doc_ids with the term (word). 
-        doc_ids = {}
         if word in inverted_index:
             index_line = inverted_index[word]
             counter = 0
@@ -76,26 +73,27 @@ def handle_query():
             query_info[word] = id_fk
             curr_doc_id = ""
             doc_data = []
-            for i in range(len(index_line[1:])):
+            sliced = index_line[1:]
+            for i in range(len(sliced)):
                 if counter % 3 == 0:
-                    curr_doc_id = index_line[i]
+                    curr_doc_id = sliced[i]
                 elif counter % 3 == 1:
-                    doc_data.append(index_line[i])
+                    doc_data.append(sliced[i])
                 elif counter % 3 == 2:
-                    doc_data.append(index_line[i])
-                    doc_ids[curr_doc_id] = doc_data
+                    doc_data.append(sliced[i])
+                    if curr_doc_id in matched_docs:
+                        matched_docs[curr_doc_id].extend([x for x in doc_data])
+                    else:
+                        matched_docs[curr_doc_id] = [x for x in doc_data]
                     doc_data.clear()
                 counter+=1
         else:
             print("Error, word was not found in inverted index")
             break
-        if firstpass:
-            matched_docs = doc_ids
-            firstpass = False
-        else:
-            # intersect the two dictionaries
-            matched_docs = {x:matched_docs[x] for x in matched_docs 
-                            if x in doc_ids}
+    
+    # Eliminate documents that don't have all the terms. 
+    matched_docs = {x:matched_docs[x] for x in matched_docs
+                    if len(matched_docs[x]) == len(query) * 2}
     
     # 2) calculate relevance score for each doc
     # calculate the vector for the query. [term frequency in query * idf, ...]
@@ -110,11 +108,15 @@ def handle_query():
     # refer to spec for calculations. 
     # https://eecs485staff.github.io/p5-search-engine/#appendix-a-tfidf-calculation-walkthrough
 
+    # ======== Work in Progress =====================
+    # Definitely not the correct logic (below), good starting point? maybe. 
     doc_scores = defaultdict(float) # maps doc_id to its dot product (as of now). 
     counter = 0
+    
     for word in query:
         idf = query_info[word]
         for doc in matched_docs:
+            # breakpoint()
             # doc is a doc_id
             tf = matched_docs[doc][0]
             pos = float(tf) * float(idf)
@@ -122,15 +124,7 @@ def handle_query():
         counter += 1
             
             
-
-    
-
-
-
-        
-
-
-    
+    print(doc_scores)
 
     # order documents by doc_id
     # ideas: use sort(), custom comparator. 
