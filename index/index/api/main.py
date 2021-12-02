@@ -62,10 +62,11 @@ def handle_query():
     query = clean(query)
     
     # 1) Get documents that have every word in the cleaned query.
-    matched_docs = {} # maps doc_id to [term freq, norm_factor] for a term.
+    matched_docs = {} # maps doc_id to [term freq, norm_factor, ...] for a term.
     query_info = {} # used to map term (word) to idf
     for word in query:
-        # get doc_ids with the term (word). 
+        # get doc_ids with the term (word).
+        # breakpoint()
         if word in inverted_index:
             index_line = inverted_index[word]
             counter = 0
@@ -100,7 +101,7 @@ def handle_query():
     term_freq = Counter([word for word in query])
     query_vec = []
     for word in query:
-        # tf * idf 
+        # tf * idf
         val = term_freq[word] * query_info[word]
         query_vec.append(val)
 
@@ -112,20 +113,25 @@ def handle_query():
     # Definitely not the correct logic (below), good starting point? maybe. 
     doc_scores = defaultdict(float) # maps doc_id to its dot product (as of now). 
     counter = 0
-    
-    for word in query:
-        idf = query_info[word]
-        for doc in matched_docs:
-            # breakpoint()
-            # doc is a doc_id
-            tf = matched_docs[doc][0]
-            pos = float(tf) * float(idf)
-            doc_scores[doc] += query_vec[counter] * pos 
-        counter += 1
-            
-            
-    print(doc_scores)
 
+    # breakpoint()
+    for doc in matched_docs:
+        vals = matched_docs[doc]
+        query_ind = 0
+        for i in range(len(vals)):
+            if i % 2 == 0:
+                tf = vals[i]
+                idf = query_info[query[query_ind]]
+                pos = float(tf) * float(idf)
+                doc_scores[doc] += query_vec[query_ind] * pos 
+            if i % 2 == 1:
+                # gets normalization
+                query_ind +=1
+
+    # TODO integrate pageRank. 
+    
+
+    # order documents by scores
     # order documents by doc_id
     # ideas: use sort(), custom comparator. 
 
