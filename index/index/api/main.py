@@ -3,6 +3,7 @@ import pathlib
 import index
 from collections import defaultdict
 from collections import Counter
+import operator
 import re
 
 stop_words = set()
@@ -129,14 +130,33 @@ def handle_query():
                 query_ind +=1
 
     # TODO integrate pageRank. 
+    weight = 0.5
+    try:
+        weight = flask.request.args['w']
+    except KeyError:
+        pass
     
+    for doc in doc_scores:
+        # doc_p = tfIdf
+        dot_p = doc_scores[doc]
+        score = (float(page_rank[str(doc)]) * float(weight) 
+                        + dot_p * (1 - float(weight)))
+        doc_scores[doc] = score
 
-    # order documents by scores
-    # order documents by doc_id
-    # ideas: use sort(), custom comparator. 
+    # order documents by scores then by doc_id
 
+    doc_list = [{"docid":x, "score":doc_scores[x]} for x in doc_scores]
 
-    return {"status" : "ok"}
+    # Stable complex sort, secondary attribute first. 
+    doc_list = sorted(doc_list, key=operator.itemgetter('docid'))
+    doc_list = sorted(doc_list, key=operator.itemgetter('score'), reverse=True)
+
+    # docid 
+    # score
+    context = {
+        "hits":[x for x in doc_list]
+    }
+    return flask.jsonify(**context)
 
 def clean(dirty):
     #This function was tricky for no reason. 
