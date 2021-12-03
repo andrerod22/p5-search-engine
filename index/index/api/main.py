@@ -129,7 +129,7 @@ def handle_query():
                 # gets normalization
                 query_ind +=1
 
-    # TODO integrate pageRank. 
+    # TODO integrate pageRank.
     weight = 0.5
     try:
         weight = flask.request.args['w']
