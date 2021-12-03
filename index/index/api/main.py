@@ -3,6 +3,7 @@ import pathlib
 import index
 from collections import defaultdict
 from collections import Counter
+import math
 import operator
 import re
 
@@ -91,7 +92,7 @@ def handle_query():
                 counter+=1
         else:
             print("Error, word was not found in inverted index")
-            break
+            return {"hits": []}
     
     # Eliminate documents that don't have all the terms. 
     matched_docs = {x:matched_docs[x] for x in matched_docs
@@ -117,19 +118,20 @@ def handle_query():
 
     # breakpoint()
     for doc in matched_docs:
-        vals = matched_docs[doc]
+        vals = matched_docs[doc] # [tf, norm, tf, norm ...]
         query_ind = 0
         for i in range(len(vals)):
             if i % 2 == 0:
                 tf = vals[i]
                 idf = query_info[query[query_ind]]
                 pos = float(tf) * float(idf)
-                doc_scores[doc] += query_vec[query_ind] * pos 
+                doc_scores[doc] += query_vec[query_ind] * pos
             if i % 2 == 1:
                 # gets normalization
                 query_ind +=1
 
-    # TODO integrate pageRank.
+    # Integrate pageRank
+
     weight = 0.5
     try:
         weight = flask.request.args['w']
@@ -139,13 +141,21 @@ def handle_query():
     for doc in doc_scores:
         # doc_p = tfIdf
         dot_p = doc_scores[doc]
+        norm_total = 0
+        for num in query_vec:
+            norm_total += pow(float(num), 2)
+        norm_q = math.sqrt(norm_total)
+        norm_d = math.sqrt(float(matched_docs[doc][1]))
+        tf_idf = dot_p / (norm_q * norm_d)
+
         score = (float(page_rank[str(doc)]) * float(weight) 
-                        + dot_p * (1 - float(weight)))
+                        + tf_idf * (1 - float(weight)) )
+
         doc_scores[doc] = score
 
     # order documents by scores then by doc_id
 
-    doc_list = [{"docid":x, "score":doc_scores[x]} for x in doc_scores]
+    doc_list = [{"docid":int(x), "score":doc_scores[x]} for x in doc_scores]
 
     # Stable complex sort, secondary attribute first. 
     doc_list = sorted(doc_list, key=operator.itemgetter('docid'))

@@ -1,6 +1,6 @@
 """Public Index Server tests."""
 import utils
-
+import pdb
 
 def test_multiple_terms(index_client):
     """Multiple word query.
@@ -16,7 +16,6 @@ def test_multiple_terms(index_client):
     # Query the REST API
     response = index_client.get("/api/v1/hits/?q=world+flags")
     assert response.status_code == 200
-
     # Compare actual hits to solution hits
     hits_actual = response.get_json()["hits"]
     hits_solution = [
