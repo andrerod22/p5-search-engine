@@ -1,5 +1,3 @@
-import heapq
-import queue
 import flask 
 import search
 import requests
@@ -34,12 +32,10 @@ def render_index():
     server_1_thread.join()
     server_2_thread.join()
     server_3_thread.join()
-    # Done modifying variables, such that we can then do heapqmerge on all results. 
-
+    # Once queue is full, pop the queue for json results from index server. 
     first_result = result_queue.get()
     second_result = result_queue.get()
     third_result = result_queue.get()
-    
     iter_list = [first_result['hits'], second_result['hits'], third_result['hits']]
 
     result = []
@@ -50,8 +46,14 @@ def render_index():
         result.append(line)
         count+= 1
 
-    for res in result:
-        print(res)
+    connection = search.model.get_db()
+    cur = connection.execute(
+            "SELECT title, url FROM documents WHERE docid='303'")
+    
+    print(cur.fetchone())
+    # result is a list of {doc_id, score}
+    # for res in result:
+    #     print(res)
 
     context = {}
     return flask.render_template("index.html", **context)
