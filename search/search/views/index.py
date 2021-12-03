@@ -37,20 +37,15 @@ def render_index():
     second_result = result_queue.get()
     third_result = result_queue.get()
     
-    first_arr = [f"{x['docid']} {x['score']}" for x in first_result['hits']]
-    second_arr = [f"{x['docid']} {x['score']}" for x in second_result['hits']]
-    third_arr = [f"{x['docid']} {x['score']}" for x in third_result['hits']]
+    search_results = [f"{x['docid']} {x['score']}" for x in first_result['hits']]
+    search_results.append([f"{x['docid']} {x['score']}" for x in second_result['hits']])
+    search_results.append([f"{x['docid']} {x['score']}" for x in third_result['hits']])
 
-    result = []
     count = 0
-    for line in merge(first_arr, second_arr, third_arr):
+    for line in heapq.merge(*search_results):
         if count == 10:
             break
-        result.append(line) 
-        count +=1
-    
-    for res in result:
-        print(res)
+        print(line)
 
     context = {}
     return flask.render_template("index.html", **context)
