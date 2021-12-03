@@ -17,7 +17,7 @@ def render_index():
     if query is None and weight is None:
         return flask.render_template("index.html")
 
-    params = {'q': query, 'w': weight}
+    params = flask.request.args
     # Access the urls for the apis through 
     api_urls = search.app.config['SEARCH_INDEX_SEGMENT_API_URLS']
 
