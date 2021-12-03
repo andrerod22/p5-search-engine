@@ -1,8 +1,9 @@
+import heapq
 import queue
 import flask 
 import search
 import requests
-import heapq
+from heapq import merge
 from threading import Thread
 from queue import Queue
 
@@ -35,18 +36,21 @@ def render_index():
     first_result = result_queue.get()
     second_result = result_queue.get()
     third_result = result_queue.get()
-    merge_lst = [first_result['hits'], second_result['hits'], third_result['hits']]
-
-    results = []
-    counter = 0
-    # < not supported with dict objects. 
-    for line in heapq.merge(*merge_lst):
-        if counter == 10:
-            break
-        results.append(line)
-        counter+=1 
     
-    print(results)
+    first_arr = [f"{x['docid']} {x['score']}" for x in first_result['hits']]
+    second_arr = [f"{x['docid']} {x['score']}" for x in second_result['hits']]
+    third_arr = [f"{x['docid']} {x['score']}" for x in third_result['hits']]
+
+    result = []
+    count = 0
+    for line in merge(first_arr, second_arr, third_arr):
+        if count == 10:
+            break
+        result.append(line) 
+        count +=1
+    
+    for res in result:
+        print(res)
 
     context = {}
     return flask.render_template("index.html", **context)
