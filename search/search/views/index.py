@@ -16,6 +16,9 @@ def render_index():
     query = flask.request.args.get('q')
     weight = flask.request.args.get("w")
 
+    if query is None and weight is None:
+        return flask.render_template("index.html")
+
     params = {'q': query, 'w': weight}
     # Access the urls for the apis through 
     api_urls = search.app.config['SEARCH_INDEX_SEGMENT_API_URLS']
@@ -37,18 +40,16 @@ def render_index():
     second_result = result_queue.get()
     third_result = result_queue.get()
     
-    first_arr = [f"{x['docid']} {x['score']}" for x in first_result['hits']]
-    second_arr = [f"{x['docid']} {x['score']}" for x in second_result['hits']]
-    third_arr = [f"{x['docid']} {x['score']}" for x in third_result['hits']]
+    iter_list = [first_result['hits'], second_result['hits'], third_result['hits']]
 
     result = []
     count = 0
-    for line in merge(first_arr, second_arr, third_arr):
+    for line in merge(*iter_list, key=lambda r : (r['score'], -r['docid'])):
         if count == 10:
             break
-        result.append(line) 
-        count +=1
-    
+        result.append(line)
+        count+= 1
+
     for res in result:
         print(res)
 
@@ -57,7 +58,7 @@ def render_index():
 
 
 def server_call(api_url, params, result_queue):
-    """"""
+    """Make a API call to an index server"""
     response = requests.get(api_url, params=params)
     response_json = response.json()
     result_queue.put(response_json)
