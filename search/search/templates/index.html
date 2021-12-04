@@ -9,15 +9,41 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 </head>
-<body>
-    <div class="ask485">
-        ask<span style="font-weight: bolder;">485?</span>
-    </div>
-    <form action="/" method="GET">
-        <div><input type="text" name="q" value=""/></div>
-        <div><input type="range" name="w" min="0" max="1" step="0.01" /> </div>
-        <input type="submit" value="Search"/>
-    </form>
-    
-</body>
+<div class="feed">
+    <body>
+        <div class="ask485">
+            <span style="font-weight: bolder;">485?</span>
+        </div>
+        <form action="/" method="GET">
+            <div class="search_bar" ><input type="text" name="q" value=""/></div>
+            <div class="pagerank_weight" ><input type="range" name="w" min="0" max="1" step="0.01" /></div>
+            <input type="submit" value="Search"/>
+        </form>
+        <div class="docs">
+            {% if not result %}
+                <div class="no_results">No search results found!</div>
+            {% endif %}
+            
+            {% for res in result %}
+                {% if res['url'] == '' %}
+                    <p>No url available</p>
+                {% else %}
+                    <a class="doc_url" href="{{ res['url'] }}">{{ res['url'] }}</a>
+                {% endif %}
+                
+                <div class="doc_title">
+                    <p> {{ res['title'] }} </p>
+                </div> 
+
+                {% if res['summary'] == '' %}
+                    <p>No summary available</p>
+                {% else %}
+                    <div class="doc_summary">
+                        {{ res['summary'] }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </body>
+</div>
 </html>

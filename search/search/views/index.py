@@ -47,15 +47,17 @@ def render_index():
         count+= 1
 
     connection = search.model.get_db()
-    cur = connection.execute(
-            "SELECT title, url FROM documents WHERE docid='303'")
     
-    print(cur.fetchone())
-    # result is a list of {doc_id, score}
-    # for res in result:
-    #     print(res)
+    res_array = [] # a list of dict objects
+    for res in result:
+        doc_id = res['docid']
+        # sql = f""""SELECT title, url, summary FROM documents WHERE docid={doc_id}"""
+        cur = connection.execute(
+                "SELECT title, url, summary FROM documents WHERE docid=%s" % doc_id)
+        res_array.append(cur.fetchone())
+        # print(cur.fetchall())
 
-    context = {}
+    context = {"result": res_array}
     return flask.render_template("index.html", **context)
 
 
