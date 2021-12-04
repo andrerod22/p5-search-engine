@@ -4,7 +4,7 @@ import requests
 from heapq import merge
 from threading import Thread
 from queue import Queue
-
+import pdb
 
 
 @search.app.route('/', methods=["GET"])
@@ -48,12 +48,14 @@ def render_index():
     result = []
     count = 0
     for line in merge(*iter_list, key=lambda r : (r['score'], -r['docid'])):
-        if count == 10:
+        if count == 30:
             break
         result.append(line)
         count+= 1
 
     connection = search.model.get_db()
+
+    db_arr = []
     
     res_array = [] # a list of dict objects
     for res in result:
@@ -61,9 +63,14 @@ def render_index():
         # sql = f""""SELECT title, url, summary FROM documents WHERE docid={doc_id}"""
         cur = connection.execute(
                 "SELECT title, url, summary FROM documents WHERE docid=%s" % doc_id)
-        res_array.append(cur.fetchone())
+        db_obj = cur.fetchone()
+        res_array.append(db_obj)
+        dict_obj = {db_obj['title']: doc_id}
+        db_arr.append(dict_obj)
         # print(cur.fetchall())
 
+    # breakpoint()
+    print(db_arr) # for debugging purposes
     context = {
         "result": res_array,
         "query": query,
