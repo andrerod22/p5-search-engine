@@ -5,6 +5,7 @@ import subprocess
 from pathlib import Path
 import pytest
 import utils
+import pdb
 
 
 # Time to wait for server to start
@@ -83,6 +84,7 @@ def test_servers_start(setup_teardown):
 
     # Try to start search server when it's already running
     completed_process = subprocess.run(["bin/search", "start"])
+    # breakpoint()
     assert completed_process.returncode != 0
 
 
