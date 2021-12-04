@@ -4,27 +4,26 @@ set -Eeuo pipefail
 
 start_server(){
     ./bin/index status
-    if[ $? != 0 ]
+    if [[ $? != 0 ]]
     then
         echo 'Error: index server is not running'
         echo 'Try ./bin/index start'
         exit 1
-    else if grep -f "flask run --host 0.0.0.0 --port 8000"
+    fi
+    if pgrep -f "flask run --host 0.0.0.0 --port 8000"
     then
         echo "Error: search server is already running"
         exit 0
-    else
-        echo "starting search server ..."
-        mkdir -p var/log
-        rm -f var/log/search.log
-        FLASK_APP=search flask run --host 0.0.0.0 --port 8000 &> var/log/search.log &
     fi
+    echo "starting search server ..."
+    mkdir -p var/log
+    rm -f var/log/search.log
+    FLASK_APP=search flask run --host 0.0.0.0 --port 8000 &> var/log/search.log &
 }
 
 stop_server(){
     echo "stopping search server ..."
     pkill -f 'flask run --host 0.0.0.0 --port 8000' || true
-    fi
 }
 
 # Parse argument.  $1 is the first argument
@@ -45,29 +44,15 @@ case $1 in
   "status")
     if pgrep -f "flask run --host 0.0.0.0 --port 8000"
     then
+        echo 'search server running'
         exit 0
-    else then 
+    else
+        echo 'search server stopped'
         exit 1
+    fi
     ;;
   *)
     exit 1
     ;;
 #End of case (write case backwards)
 esac
-
-
-
-
-# set +o pipefail
-# NPROCS=$(pgrep -f "flask run --host 0.0.0.0 --port 900[0-2]" | wc -l)
-# set -o pipefail
-# if [ "$NPROCS" -eq 3 ]; then
-#   echo "index server running"
-#   exit
-# elif [ "$NPROCS" -eq 0 ]; then
-#   echo "index server stopped"
-#   exit 1
-# else
-#   echo "index server error: found ${NPROCS} processes, expected 3"
-#   exit 2
-# fi
