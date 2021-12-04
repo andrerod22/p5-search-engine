@@ -12,10 +12,17 @@ def render_index():
     """Renders index."""
 
     query = flask.request.args.get('q')
-    weight = flask.request.args.get("w")
+    weight = flask.request.args.get('w')
+    print(f"WEIGHT: {weight}")
 
-    if query is None and weight is None:
-        return flask.render_template("index.html")
+    if query is None:
+        context = {
+            "result": [],
+            "query": "",
+            "weight": "",
+            "queried": False
+            }
+        return flask.render_template("index.html", **context)
 
     params = flask.request.args
     # Access the urls for the apis through 
@@ -57,7 +64,12 @@ def render_index():
         res_array.append(cur.fetchone())
         # print(cur.fetchall())
 
-    context = {"result": res_array}
+    context = {
+        "result": res_array,
+        "query": query,
+        "weight": weight,
+        "queried": True
+        }
     return flask.render_template("index.html", **context)
 
 
