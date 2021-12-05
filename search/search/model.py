@@ -12,6 +12,7 @@ def dict_factory(cursor, row):
     """
     return {col[0]: row[idx] for idx, col in enumerate(cursor.description)}
 
+
 def get_db():
     """Open a new database connection.
 

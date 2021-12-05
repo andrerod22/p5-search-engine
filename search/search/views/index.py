@@ -1,4 +1,4 @@
-import flask 
+import flask
 import search
 import requests
 from operator import itemgetter
@@ -15,7 +15,6 @@ def render_index():
     weight = flask.request.args.get('w')
     print(f"WEIGHT: {weight}")
 
-    
     if query is None:
         context = {
             "result": [],
@@ -27,27 +26,33 @@ def render_index():
 
     # params = flask.request.args
     params = {"q": query, "w": weight}
-    # Access the urls for the apis through 
+    # Access the urls for the apis through
     api_urls = search.app.config['SEARCH_INDEX_SEGMENT_API_URLS']
 
     result_queue = Queue(maxsize=3)
-    server_1_thread = Thread(target=server_call, args=(api_urls[0], params, result_queue))
-    server_2_thread = Thread(target=server_call, args=(api_urls[1], params, result_queue))
-    server_3_thread = Thread(target=server_call, args=(api_urls[2], params, result_queue))
-    
+    server_1_thread = Thread(target=server_call,
+                             args=(api_urls[0], params, result_queue))
+    server_2_thread = Thread(target=server_call,
+                             args=(api_urls[1], params, result_queue))
+    server_3_thread = Thread(target=server_call,
+                             args=(api_urls[2], params, result_queue))
+
     server_1_thread.start()
     server_2_thread.start()
     server_3_thread.start()
     server_1_thread.join()
     server_2_thread.join()
     server_3_thread.join()
-    # Once queue is full, pop the queue for json results from index server. 
+    # Once queue is full, pop the queue for json results from index server.
     first_result = result_queue.get()
     second_result = result_queue.get()
     third_result = result_queue.get()
-    iter_list = [first_result['hits'], second_result['hits'], third_result['hits']]
+    iter_list = [
+        first_result['hits'],
+        second_result['hits'],
+        third_result['hits']
+    ]
 
-    # BUG Issue is on merging. 
     result = []
     count = 0
     for line in merge(*iter_list, key=itemgetter('score'), reverse=True):
@@ -58,14 +63,14 @@ def render_index():
     result = sorted(result, key=itemgetter('score'), reverse=True)
     connection = search.model.get_db()
 
-    res_array = [] # a list of dict objects
+    res_array = []  # a list of dict objects
     for res in result:
         if count == 10:
             break
         doc_id = res['docid']
-        # sql = f""""SELECT title, url, summary FROM documents WHERE docid={doc_id}"""
         cur = connection.execute(
-                "SELECT title, url, summary FROM documents WHERE docid=%s" % doc_id)
+                """SELECT title, url, summary
+                FROM documents WHERE docid=%s""" % doc_id)
         db_obj = cur.fetchone()
         res_array.append(db_obj)
         # print(cur.fetchall())
