@@ -107,7 +107,7 @@ def test_titles(search_client):
     assert len(doc_titles) == 10
 
     doc_titles_text = [re.sub(r"\s+", " ", x.text.strip()) for x in doc_titles]
-    breakpoint()
+    # breakpoint()
     assert doc_titles_text == [
         "Boerboel",
         "Fogelsville, Pennsylvania",

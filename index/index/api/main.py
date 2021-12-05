@@ -98,6 +98,7 @@ def handle_query():
     matched_docs = {x:matched_docs[x] for x in matched_docs
                     if len(matched_docs[x]) == len(query) * 2}
     
+    # breakpoint()
     # 2) calculate relevance score for each doc
     # calculate the vector for the query. [term frequency in query * idf, ...]
     term_freq = Counter([word for word in query])
@@ -140,6 +141,8 @@ def handle_query():
     
     for doc in doc_scores:
         # doc_p = tfIdf
+        # if doc == 214936:
+        #     breakpoint()
         dot_p = doc_scores[doc]
         norm_total = 0
         for num in query_vec:
