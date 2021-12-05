@@ -60,7 +60,6 @@ def render_index():
             break
         result.append(line)
 
-    result = sorted(result, key=itemgetter('score'), reverse=True)
     connection = search.model.get_db()
 
     res_array = []  # a list of dict objects
