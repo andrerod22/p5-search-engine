@@ -59,22 +59,19 @@ def render_index():
         if count == 10:
             break
         result.append(line)
+        count += 1
 
     result = sorted(result, key=itemgetter('score'), reverse=True)
     connection = search.model.get_db()
 
     res_array = []  # a list of dict objects
     for res in result:
-        if count == 10:
-            break
         doc_id = res['docid']
         cur = connection.execute(
                 """SELECT title, url, summary
                 FROM documents WHERE docid=%s""" % doc_id)
         db_obj = cur.fetchone()
         res_array.append(db_obj)
-        # print(cur.fetchall())
-        count += 1
 
     # breakpoint()
 
