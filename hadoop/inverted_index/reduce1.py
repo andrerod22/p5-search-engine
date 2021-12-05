@@ -41,7 +41,6 @@ def keyfunc(line):
 def main():
     """Divide sorted lines into groups that share a key."""
     pipeline_input = sys.stdin
-    sys.stdin = open("/dev/tty")
     for key, group in itertools.groupby(pipeline_input, keyfunc):
         reduce_one_group(key, group)
 
