@@ -5,6 +5,7 @@ from heapq import merge
 from threading import Thread
 from queue import Queue
 import pdb
+from operator import itemgetter
 
 
 @search.app.route('/', methods=["GET"])
@@ -48,17 +49,17 @@ def render_index():
     result = []
     count = 0
     for line in merge(*iter_list, key=lambda r : (r['score'], -r['docid'])):
-        if count == 30:
-            break
         result.append(line)
-        count+= 1
 
+    result = sorted(result, key=itemgetter('score'), reverse=True)
     connection = search.model.get_db()
 
     db_arr = []
     
     res_array = [] # a list of dict objects
     for res in result:
+        if count == 10:
+            break
         doc_id = res['docid']
         # sql = f""""SELECT title, url, summary FROM documents WHERE docid={doc_id}"""
         cur = connection.execute(
@@ -68,6 +69,7 @@ def render_index():
         dict_obj = {db_obj['title']: doc_id}
         db_arr.append(dict_obj)
         # print(cur.fetchall())
+        count += 1
 
     # breakpoint()
     print(db_arr) # for debugging purposes
