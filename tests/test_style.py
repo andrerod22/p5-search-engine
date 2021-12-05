@@ -2,15 +2,14 @@
 import subprocess
 import utils
 
-
-def test_pycodestyle():
-    """Run pycodestyle."""
-    assert_no_prohibited_terms("nopep8", "noqa", "pylint")
-    subprocess.run([
-        "pycodestyle",
-        "index/index",
-        "search/search",
-    ], check=True)
+# def test_pycodestyle():
+#    """Run pycodestyle."""
+#    assert_no_prohibited_terms("nopep8", "noqa", "pylint")
+#    subprocess.run([
+#        "pycodestyle",
+#        "index/index",
+#        "search/search",
+#    ], check=True)
 
 
 # def test_pydocstyle():
@@ -23,18 +22,18 @@ def test_pycodestyle():
 #     ], check=True)
 
 
-# def test_pylint():
-#     """Run pylint."""
-#     assert_no_prohibited_terms("nopep8", "noqa", "pylint")
-#     subprocess.run([
-#         "pylint",
-#         "--rcfile", utils.TEST_DIR/"testdata/pylintrc",
-#         "--disable=cyclic-import",
-#         "--unsafe-load-any-extension=y",
-#         "--disable=assigning-non-slot",
-#         "index/index",
-#         "search/search",
-#     ], check=True)
+def test_pylint():
+     """Run pylint."""
+     assert_no_prohibited_terms("nopep8", "noqa", "pylint")
+     subprocess.run([
+         "pylint",
+         "--rcfile", utils.TEST_DIR/"testdata/pylintrc",
+         "--disable=cyclic-import",
+         "--unsafe-load-any-extension=y",
+         "--disable=assigning-non-slot",
+         "index/index",
+         "search/search",
+     ], check=True)
 
 
 def assert_no_prohibited_terms(*terms):
