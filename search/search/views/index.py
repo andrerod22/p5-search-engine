@@ -4,7 +4,7 @@ import requests
 from heapq import merge
 from threading import Thread
 from queue import Queue
-
+import pdb
 
 
 @search.app.route('/', methods=["GET"])
@@ -12,10 +12,17 @@ def render_index():
     """Renders index."""
 
     query = flask.request.args.get('q')
-    weight = flask.request.args.get("w")
+    weight = flask.request.args.get('w')
+    print(f"WEIGHT: {weight}")
 
-    if query is None and weight is None:
-        return flask.render_template("index.html")
+    if query is None:
+        context = {
+            "result": [],
+            "query": "",
+            "weight": "",
+            "queried": False
+            }
+        return flask.render_template("index.html", **context)
 
     params = flask.request.args
     # Access the urls for the apis through 
@@ -41,12 +48,14 @@ def render_index():
     result = []
     count = 0
     for line in merge(*iter_list, key=lambda r : (r['score'], -r['docid'])):
-        if count == 10:
+        if count == 30:
             break
         result.append(line)
         count+= 1
 
     connection = search.model.get_db()
+
+    db_arr = []
     
     res_array = [] # a list of dict objects
     for res in result:
@@ -54,10 +63,20 @@ def render_index():
         # sql = f""""SELECT title, url, summary FROM documents WHERE docid={doc_id}"""
         cur = connection.execute(
                 "SELECT title, url, summary FROM documents WHERE docid=%s" % doc_id)
-        res_array.append(cur.fetchone())
+        db_obj = cur.fetchone()
+        res_array.append(db_obj)
+        dict_obj = {db_obj['title']: doc_id}
+        db_arr.append(dict_obj)
         # print(cur.fetchall())
 
-    context = {"result": res_array}
+    # breakpoint()
+    print(db_arr) # for debugging purposes
+    context = {
+        "result": res_array,
+        "query": query,
+        "weight": weight,
+        "queried": True
+        }
     return flask.render_template("index.html", **context)
 
 

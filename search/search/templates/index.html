@@ -9,41 +9,50 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 </head>
-<div class="feed">
+
     <body>
-        <div class="ask485">
-            <span style="font-weight: bolder;">485?</span>
-        </div>
-        <form action="/" method="GET">
-            <div class="search_bar" ><input type="text" name="q" value=""/></div>
-            <div class="pagerank_weight" ><input type="range" name="w" min="0" max="1" step="0.01" /></div>
-            <input type="submit" value="Search"/>
-        </form>
-        <div class="docs">
-            {% if not result %}
-                <div class="no_results">No search results found!</div>
-            {% endif %}
-            
-            {% for res in result %}
-                {% if res['url'] == '' %}
-                    <p>No url available</p>
+        <div class="feed">
+            <div class="ask485">
+                ask<span style="font-weight: bolder;">485?</span>
+            </div>
+            <form action="/" method="GET">
+                <div class="search_bar" >
+                    <input type="text" name="q" value="{{ query }}"/>
+                </div>
+                <div class="pagerank_weight">Pagerank Weight</div>
+                {% if weight != "" %}
+                    <input type="range" name="w" min="0" max="1" step="0.01" value="{{weight}}"/>
                 {% else %}
-                    <a class="doc_url" href="{{ res['url'] }}">{{ res['url'] }}</a>
+                    <input type="range" name="w" min="0" max="1" step="0.01" value="0.5"/>
+                {% endif %}
+                <input type="submit" value="Search"/>
+            </form>
+            <div class="docs">
+                {% if not result and queried %}
+                    <div class="no_results">No search results found!</div>
                 {% endif %}
                 
-                <div class="doc_title">
-                    <p> {{ res['title'] }} </p>
-                </div> 
+                {% for res in result %}
+                    {% if res['url'] == '' %}
+                        <p>No url available</p>
+                    {% else %}
+                        <a class="doc_url" href="{{ res['url'] }}">{{ res['url'] }}</a>
+                    {% endif %}
+                    
+                    <div class="doc_title">
+                        {{ res['title'] }}
+                    </div> 
 
-                {% if res['summary'] == '' %}
-                    <p>No summary available</p>
-                {% else %}
-                    <div class="doc_summary">
-                        {{ res['summary'] }}
-                    </div>
-                {% endif %}
-            {% endfor %}
+                    {% if res['summary'] == '' %}
+                        <p>No summary available</p>
+                    {% else %}
+                        <div class="doc_summary">
+                            {{ res['summary'] }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
     </body>
-</div>
+
 </html>
