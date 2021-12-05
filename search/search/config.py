@@ -1,3 +1,4 @@
+"""Config file for file style public constants."""
 import pathlib
 
 SEARCH_INDEX_SEGMENT_API_URLS = [

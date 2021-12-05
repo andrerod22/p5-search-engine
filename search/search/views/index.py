@@ -1,3 +1,4 @@
+"""Flask serverside for rendering search engine results."""
 import flask
 import search
 import requests
@@ -9,8 +10,7 @@ from queue import Queue
 
 @search.app.route('/', methods=["GET"])
 def render_index():
-    """Renders index."""
-
+    """Render index."""
     query = flask.request.args.get('q')
     weight = flask.request.args.get('w')
     print(f"WEIGHT: {weight}")
@@ -85,7 +85,7 @@ def render_index():
 
 
 def server_call(api_url, params, result_queue):
-    """Make a API call to an index server"""
+    """Make a API call to an index server."""
     response = requests.get(api_url, params=params)
     response_json = response.json()
     result_queue.put(response_json)
