@@ -71,6 +71,8 @@ def render_index():
         # print(cur.fetchall())
         count += 1
 
+    # breakpoint()
+
     context = {
         "result": res_array,
         "query": query,
