@@ -61,7 +61,6 @@ def render_index():
         result.append(line)
         count += 1
 
-    result = sorted(result, key=itemgetter('score'), reverse=True)
     connection = search.model.get_db()
 
     res_array = []  # a list of dict objects
