@@ -11,7 +11,9 @@ stop_words = set()
 page_rank = {}
 inverted_index = {}
 
-#function below is copied from spec. need more time to understand. 
+# function below is copied from spec. need more time to understand.
+
+
 @index.app.before_first_request
 def startup():
     """Load inverted index, pagerank, and stopwords into memory."""
@@ -19,6 +21,7 @@ def startup():
     read_stopwords(index_dir)
     read_pagerank(index_dir)
     read_inverted_index(index_dir)
+
 
 def read_stopwords(index_dir):
     """Read stopwords."""
@@ -29,6 +32,7 @@ def read_stopwords(index_dir):
             line = line.replace("\n", "")
             stop_words.add(line)
 
+
 def read_pagerank(index_dir):
     page_path = pathlib.Path(index_dir/"pagerank.out")
     with open(page_path, mode="r") as r:
@@ -37,6 +41,7 @@ def read_pagerank(index_dir):
             doc_id, rank_score = line.split(",")
             rank_score = rank_score.replace("\n", "")
             page_rank[doc_id] = rank_score
+
 
 def read_inverted_index(index_dir):
     index_path = pathlib.Path(index_dir/"inverted_index"/index.app.config['INDEX_PATH'])
@@ -48,6 +53,7 @@ def read_inverted_index(index_dir):
             # Sets the term as the key, and
             # the other numbers in the list as value
             inverted_index[line[0]] = line[1:]
+
 
 @index.app.route('/api/v1/', methods=["GET"])
 def list_services():
