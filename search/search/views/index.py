@@ -68,6 +68,8 @@ def render_index():
         res_array.append(db_obj)
         # print(cur.fetchall())
 
+    # breakpoint()
+
     context = {
         "result": res_array,
         "query": query,

@@ -34,7 +34,7 @@
                 
                 {% for res in result %}
                     {% if res['url'] == '' %}
-                        <p>No url available</p>
+                        <a class="doc_url">No url available</a>
                     {% else %}
                         <a class="doc_url" href="{{ res['url'] }}">{{ res['url'] }}</a>
                     {% endif %}
@@ -44,7 +44,9 @@
                     </div> 
 
                     {% if res['summary'] == '' %}
-                        <p>No summary available</p>
+                        <div class="doc_summary">
+                            No summary available
+                        </div>
                     {% else %}
                         <div class="doc_summary">
                             {{ res['summary'] }}

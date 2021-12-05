@@ -150,6 +150,7 @@ def test_summaries_urls(search_client):
     assert doc_titles_text == ["Eschweiler", "Gunge", "List of AT4W episodes"]
 
     doc_summaries = soup.find_all("div", {"class": "doc_summary"})
+
     assert len(doc_summaries) == 3
 
     doc_summary_text = [re.sub(r"\s+", " ", x.text.strip())
