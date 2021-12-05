@@ -1,11 +1,10 @@
 import flask 
 import search
 import requests
+from operator import itemgetter
 from heapq import merge
 from threading import Thread
 from queue import Queue
-import pdb
-from operator import itemgetter
 
 
 @search.app.route('/', methods=["GET"])
@@ -16,6 +15,7 @@ def render_index():
     weight = flask.request.args.get('w')
     print(f"WEIGHT: {weight}")
 
+    
     if query is None:
         context = {
             "result": [],
@@ -25,7 +25,8 @@ def render_index():
             }
         return flask.render_template("index.html", **context)
 
-    params = flask.request.args
+    # params = flask.request.args
+    params = {"q": query, "w": weight}
     # Access the urls for the apis through 
     api_urls = search.app.config['SEARCH_INDEX_SEGMENT_API_URLS']
 
@@ -46,16 +47,17 @@ def render_index():
     third_result = result_queue.get()
     iter_list = [first_result['hits'], second_result['hits'], third_result['hits']]
 
+    # BUG Issue is on merging. 
     result = []
     count = 0
-    for line in merge(*iter_list, key=lambda r : (r['score'], -r['docid'])):
+    for line in merge(*iter_list, key=itemgetter('score'), reverse=True):
+        if count == 10:
+            break
         result.append(line)
 
     result = sorted(result, key=itemgetter('score'), reverse=True)
     connection = search.model.get_db()
 
-    db_arr = []
-    
     res_array = [] # a list of dict objects
     for res in result:
         if count == 10:
@@ -66,13 +68,9 @@ def render_index():
                 "SELECT title, url, summary FROM documents WHERE docid=%s" % doc_id)
         db_obj = cur.fetchone()
         res_array.append(db_obj)
-        dict_obj = {db_obj['title']: doc_id}
-        db_arr.append(dict_obj)
         # print(cur.fetchall())
         count += 1
 
-    # breakpoint()
-    print(db_arr) # for debugging purposes
     context = {
         "result": res_array,
         "query": query,
