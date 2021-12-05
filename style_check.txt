@@ -1,0 +1,39 @@
+************* Module index.api
+index/index/api/__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+************* Module index.api.main
+index/index/api/main.py:72:0: R0914: Too many local variables (31/15) (too-many-locals)
+index/index/api/main.py:91:12: C0200: Consider using enumerate instead of iterating with range and len (consider-using-enumerate)
+index/index/api/main.py:99:0: R1721: Unnecessary use of a comprehension, use doc_data instead. (unnecessary-comprehension)
+index/index/api/main.py:101:0: R1721: Unnecessary use of a comprehension, use doc_data instead. (unnecessary-comprehension)
+index/index/api/main.py:109:0: C0206: Consider iterating with .items() (consider-using-dict-items)
+index/index/api/main.py:115:0: R1721: Unnecessary use of a comprehension, use query instead. (unnecessary-comprehension)
+index/index/api/main.py:135:8: C0200: Consider using enumerate instead of iterating with range and len (consider-using-enumerate)
+index/index/api/main.py:137:16: C0103: Variable name "tf" doesn't conform to snake_case naming style (invalid-name)
+index/index/api/main.py:181:0: R1721: Unnecessary use of a comprehension, use list(doc_list) instead. (unnecessary-comprehension)
+index/index/api/main.py:72:0: R0912: Too many branches (17/12) (too-many-branches)
+index/index/api/main.py:72:0: R0915: Too many statements (60/50) (too-many-statements)
+index/index/api/main.py:188:4: W0621: Redefining name 'clean' from outer scope (line 185) (redefined-outer-name)
+index/index/api/main.py:185:0: C0116: Missing function or method docstring (missing-function-docstring)
+index/index/api/main.py:3:0: C0411: standard import "import pathlib" should be placed before "import flask" (wrong-import-order)
+index/index/api/main.py:5:0: C0411: standard import "from collections import defaultdict" should be placed before "import flask" (wrong-import-order)
+index/index/api/main.py:6:0: C0411: standard import "from collections import Counter" should be placed before "import flask" (wrong-import-order)
+index/index/api/main.py:7:0: C0411: standard import "import math" should be placed before "import flask" (wrong-import-order)
+index/index/api/main.py:8:0: C0411: standard import "import operator" should be placed before "import flask" (wrong-import-order)
+index/index/api/main.py:9:0: C0411: standard import "import re" should be placed before "import flask" (wrong-import-order)
+************* Module search
+search/search/__init__.py:3:0: C0411: standard import "import os" should be placed before "import flask" (wrong-import-order)
+************* Module search.config
+search/search/config.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+************* Module search.model
+search/search/model.py:24:8: E0237: Assigning to attribute 'sqlite_db' not defined in class slots (assigning-non-slot)
+************* Module search.views.index
+search/search/views/index.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+search/search/views/index.py:11:0: R0914: Too many local variables (22/15) (too-many-locals)
+search/search/views/index.py:71:16: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+search/search/views/index.py:3:0: C0411: third party import "import requests" should be placed before "import search" (wrong-import-order)
+search/search/views/index.py:4:0: C0411: standard import "from operator import itemgetter" should be placed before "import flask" (wrong-import-order)
+search/search/views/index.py:5:0: C0411: standard import "from heapq import merge" should be placed before "import flask" (wrong-import-order)
+search/search/views/index.py:6:0: C0411: standard import "from threading import Thread" should be placed before "import flask" (wrong-import-order)
+search/search/views/index.py:7:0: C0411: standard import "from queue import Queue" should be placed before "import flask" (wrong-import-order)
+************* Module search.views
+search/search/views/__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)

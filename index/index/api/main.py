@@ -1,11 +1,12 @@
-import flask
-import pathlib
-import index
+"""Main index server driver"""
 from collections import defaultdict
 from collections import Counter
+import pathlib
 import math
 import operator
+import flask
 import re
+import index
 
 stop_words = set()
 page_rank = {}
@@ -26,17 +27,18 @@ def startup():
 def read_stopwords(index_dir):
     """Read stopwords."""
     page_path = pathlib.Path(index_dir/"stopwords.txt")
-    with open(page_path, 'r') as input:
-        lines = input.readlines()
+    with open(page_path, 'r', encoding="utf-8") as r_i:
+        lines = r_i.readlines()
         for line in lines:
             line = line.replace("\n", "")
             stop_words.add(line)
 
 
 def read_pagerank(index_dir):
+    """Read pagerank."""
     page_path = pathlib.Path(index_dir/"pagerank.out")
-    with open(page_path, mode="r") as r:
-        lines = r.readlines()
+    with open(page_path, mode="r", encoding="utf-8") as r_i:
+        lines = r_i.readlines()
         for line in lines:
             doc_id, rank_score = line.split(",")
             rank_score = rank_score.replace("\n", "")
@@ -44,9 +46,10 @@ def read_pagerank(index_dir):
 
 
 def read_inverted_index(index_dir):
+    """Load inverted index."""
     index_path = pathlib.Path(index_dir/"inverted_index"/index.app.config['INDEX_PATH'])
-    with open(index_path, mode="r") as r:
-        lines = r.readlines()
+    with open(index_path, mode="r", encoding="utf-8") as r_i:
+        lines = r_i.readlines()
         for line in lines:
             line = line.replace("\n", "")
             line = line.split(" ")
@@ -57,6 +60,7 @@ def read_inverted_index(index_dir):
 
 @index.app.route('/api/v1/', methods=["GET"])
 def list_services():
+    """Load JSON Object of services."""
     context = {
         "hits": "/api/v1/hits/",
         "url": "/api/v1/"
@@ -66,9 +70,10 @@ def list_services():
 
 @index.app.route('/api/v1/hits/', methods=["GET"])
 def handle_query():
+    """Handle the query."""
     query = flask.request.args.get('q')
     query = clean(query)
-    
+
     # 1) Get documents that have every word in the cleaned query.
     matched_docs = {} # maps doc_id to [term freq, norm_factor, ...] for a term.
     query_info = {} # used to map term (word) to idf
@@ -99,11 +104,11 @@ def handle_query():
         else:
             print("Error, word was not found in inverted index")
             return {"hits": []}
-    
-    # Eliminate documents that don't have all the terms. 
+
+    # Eliminate documents that don't have all the terms.
     matched_docs = {x:matched_docs[x] for x in matched_docs
                     if len(matched_docs[x]) == len(query) * 2}
-    
+
     # breakpoint()
     # 2) calculate relevance score for each doc
     # calculate the vector for the query. [term frequency in query * idf, ...]
@@ -114,13 +119,13 @@ def handle_query():
         val = term_freq[word] * query_info[word]
         query_vec.append(val)
 
-    # 3) TODO calculate the vector for each document and calculate the score. 
-    # refer to spec for calculations. 
+    # 3) TODO calculate the vector for each document and calculate the score.
+    # refer to spec for calculations.
     # https://eecs485staff.github.io/p5-search-engine/#appendix-a-tfidf-calculation-walkthrough
 
     # ======== Work in Progress =====================
-    # Definitely not the correct logic (below), good starting point? maybe. 
-    doc_scores = defaultdict(float) # maps doc_id to its dot product (as of now). 
+    # Definitely not the correct logic (below), good starting point? maybe.
+    doc_scores = defaultdict(float) # maps doc_id to its dot product (as of now).
     counter = 0
 
     # breakpoint()
@@ -144,7 +149,7 @@ def handle_query():
         weight = flask.request.args['w']
     except KeyError:
         pass
-    
+
     for doc in doc_scores:
         # doc_p = tfIdf
         # if doc == 214936:
@@ -157,7 +162,7 @@ def handle_query():
         norm_d = math.sqrt(float(matched_docs[doc][1]))
         tf_idf = dot_p / (norm_q * norm_d)
 
-        score = (float(page_rank[str(doc)]) * float(weight) 
+        score = (float(page_rank[str(doc)]) * float(weight)
                         + tf_idf * (1 - float(weight)) )
 
         doc_scores[doc] = score
@@ -166,11 +171,11 @@ def handle_query():
 
     doc_list = [{"docid":int(x), "score":doc_scores[x]} for x in doc_scores]
 
-    # Stable complex sort, secondary attribute first. 
+    # Stable complex sort, secondary attribute first.
     doc_list = sorted(doc_list, key=operator.itemgetter('docid'))
     doc_list = sorted(doc_list, key=operator.itemgetter('score'), reverse=True)
 
-    # docid 
+    # docid
     # score
     context = {
         "hits":[x for x in doc_list]
@@ -178,11 +183,11 @@ def handle_query():
     return flask.jsonify(**context)
 
 def clean(dirty):
-    #This function was tricky for no reason. 
+    #This function was tricky for no reason.
     dirty = re.sub(r"[^a-zA-Z0-9 ]+", "", dirty).casefold().split()
     clean = []
     counter = 0
-    while(counter < len(dirty)):
+    while counter < len(dirty):
         if dirty[counter] not in stop_words:
             clean.append(dirty[counter])
         counter+=1
