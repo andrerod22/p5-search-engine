@@ -1,3 +1,4 @@
+"""Main for api."""
 import flask
 import pathlib
 import index
@@ -34,6 +35,7 @@ def read_stopwords(index_dir):
 
 
 def read_pagerank(index_dir):
+    """Read page ranks and store."""
     page_path = pathlib.Path(index_dir/"pagerank.out")
     with open(page_path, mode="r") as r:
         lines = r.readlines()
@@ -44,6 +46,7 @@ def read_pagerank(index_dir):
 
 
 def read_inverted_index(index_dir):
+    """Read inverted index."""
     tmp = pathlib.Path(index_dir/"inverted_index")
     index_path = pathlib.Path(tmp/index.app.config['INDEX_PATH'])
     with open(index_path, mode="r") as r:
@@ -58,6 +61,7 @@ def read_inverted_index(index_dir):
 
 @index.app.route('/api/v1/', methods=["GET"])
 def list_services():
+    """List services."""
     context = {
         "hits": "/api/v1/hits/",
         "url": "/api/v1/"
@@ -67,6 +71,7 @@ def list_services():
 
 @index.app.route('/api/v1/hits/', methods=["GET"])
 def handle_query():
+    """Handle query."""
     query = flask.request.args.get('q')
     query = clean(query)
     # 1) Get documents that have every word in the cleaned query.
@@ -181,6 +186,7 @@ def handle_query():
 
 
 def clean(dirty):
+    """Clean query."""
     # This function was tricky for no reason.
     dirty = re.sub(r"[^a-zA-Z0-9 ]+", "", dirty).casefold().split()
     clean = []
