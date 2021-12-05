@@ -13,14 +13,14 @@ def test_pycodestyle():
     ], check=True)
 
 
-# def test_pydocstyle():
-#     """Run pydocstyle."""
-#     assert_no_prohibited_terms("nopep8", "noqa", "pylint")
-#     subprocess.run([
-#         "pydocstyle",
-#         "index", "index/setup.py",
-#         "search/search",
-#     ], check=True)
+def test_pydocstyle():
+    """Run pydocstyle."""
+    assert_no_prohibited_terms("nopep8", "noqa", "pylint")
+    subprocess.run([
+        "pydocstyle",
+        "index", "index/setup.py",
+        "search/search",
+    ], check=True)
 
 
 # def test_pylint():
