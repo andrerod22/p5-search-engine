@@ -14,6 +14,7 @@ inverted_index = {}
 
 # function below is copied from spec. need more time to understand.
 
+
 @index.app.before_first_request
 def startup():
     """Load inverted index, pagerank, and stopwords into memory."""
