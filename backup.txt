@@ -77,50 +77,29 @@ def handle_query():
     # 1) Get documents that have every word in the cleaned query.
 
     # maps doc_id to [term freq, norm_factor, ...] for a term.
-    matched_docs = {}
+    # matched_docs = {}
     # used to map term (word) to idf
     query_info = {}
+    matched_docs = {}
     for word in query:
         # get doc_ids with the term (word).
         # breakpoint()
         if word in inverted_index:
-            # index_line = inverted_index[word]
-            # counter = 0
-            # id_fk = float(inverted_index[word][0])
             query_info[word] = float(inverted_index[word][0])
-            matched_docs = find_matching_docs(word,
-                                              inverted_index, matched_docs)
-            # curr_doc_id = ""
-            # doc_data = []
-            # sliced = inverted_index[word][1:]
-            # for i in range(len(inverted_index[word][1:])):
-            #    if counter % 3 == 0:
-            #        curr_doc_id = inverted_index[word][1:][i]
-            #    elif counter % 3 == 1:
-            #        doc_data.append(inverted_index[word][1:][i])
-            #    elif counter % 3 == 2:
-            #        doc_data.append(inverted_index[word][1:][i])
-            #        if curr_doc_id in matched_docs:
-            #        matched_docs[curr_doc_id].extend([x for x in doc_data])
-            #        else:
-            #            matched_docs[curr_doc_id] = [x for x in doc_data]
-            #        doc_data.clear()
-            #    counter += 1
+            # index_line = inverted_index[word]
+            matched_docs = find_matching_docs(word, inverted_index)
         else:
             print("Error, word was not found in inverted index")
             return {"hits": []}
 
     # Eliminate documents that don't have all the terms.
-    matched_docs = {key: value for key, value in matched_docs.items()
-                    if len(value) == len(query) * 2}
-
-    # matched_docs = {x: matched_docs[x] for x in matched_docs
-    #       if len(matched_docs[x]) == len(query) * 2}
+    matched_docs = {x: matched_docs[x] for x in matched_docs
+                    if len(matched_docs[x]) == len(query) * 2}
 
     # breakpoint()
     # 2) calculate relevance score for each doc
     # calculate the vector for the query. [term frequency in query * idf, ...]
-    term_freq = Counter(query)
+    term_freq = Counter([word for word in query])
     query_vec = []
     for word in query:
         # tf * idf
@@ -141,13 +120,12 @@ def handle_query():
         query_ind = 0
         for i in range(len(matched_docs[doc])):
             if i % 2 == 0:
-                # tf = matched_docs[doc][i]
+                # t_f = matched_docs[doc][i]
                 # idf = query_info[query[query_ind]]
-                # pos = (float(matched_docs[doc][i])
-                # * float(query_info[query[query_ind]]))
+                # pos = float(matched_docs[doc][i]) * float(query_info[query[query_ind]])
                 doc_scores[doc] += (query_vec[query_ind]
-                                    * (float(matched_docs[doc][i])
-                                       * float(query_info[query[query_ind]])))
+                        * float(matched_docs[doc][i])
+                        * float(query_info[query[query_ind]]))
             if i % 2 == 1:
                 # gets normalization
                 query_ind += 1
@@ -164,27 +142,25 @@ def handle_query():
             norm_total += pow(float(num), 2)
         # norm_q = math.sqrt(norm_total)
         # norm_d = math.sqrt(float(matched_docs[doc][1]))
-        # tf_idf = (doc_scores[doc]
-        #          / (math.sqrt(norm_total)
-        #          * math.sqrt(float(matched_docs[doc][1]))))
-
-        # weight = 0.5
-        try:
-            doc_scores[doc] = (float(page_rank[str(doc)])
-                               * float(flask.request.args['w'])
-                               + (doc_scores[doc]
-                               / (math.sqrt(norm_total)
-                                  * math.sqrt(float(matched_docs[doc][1]))))
-                               * (1 - float(flask.request.args['w'])))
-        except KeyError:
-            doc_scores[doc] = (float(page_rank[str(doc)]) * float(0.5)
-                               + (doc_scores[doc]
-                               / (math.sqrt(norm_total)
-                                  * math.sqrt(float(matched_docs[doc][1]))))
-                               * (0.5))
+        # tf_idf = doc_scores[doc] /
+        # (math.sqrt(norm_total) * math.sqrt(float(matched_docs[doc][1])))
 
         # score = (float(page_rank[str(doc)]) * float(weight)
-        # + tf_idf * (1 - float(weight)))
+                 # + tf_idf * (1 - float(weight)))
+        # weight = 0.5
+        try:
+            # weight = flask.request.args['w']
+            doc_scores[doc] = (float(page_rank[str(doc)]) * float(flask.request.args['w'])
+                    + doc_scores[doc]
+                    / (math.sqrt(norm_total) * math.sqrt(float(matched_docs[doc][1])))
+                    * (1 - float(flask.request.args['w'])))
+        except KeyError:
+            doc_scores[doc] = (float(page_rank[str(doc)]) * 0.5
+                    + doc_scores[doc]
+                    / (math.sqrt(norm_total) * math.sqrt(float(matched_docs[doc][1])))
+                    * (1 - 0.5))
+
+
 
     # order documents by scores then by doc_id
 
@@ -194,9 +170,12 @@ def handle_query():
     doc_list = sorted(doc_list, key=operator.itemgetter('docid'))
     doc_list = sorted(doc_list, key=operator.itemgetter('score'), reverse=True)
 
-    return flask.jsonify({
-        "hits": doc_list
-    })
+    # docid
+    # score
+    context = {
+        "hits": [x for x in doc_list]
+    }
+    return flask.jsonify(**context)
 
 
 def clean(dirty):
@@ -211,14 +190,13 @@ def clean(dirty):
         counter += 1
     return clean_arr
 
-
-def find_matching_docs(word, inverted_index_in, matched_docs):
+def find_matching_docs(word, inverted_index_in):
     """Add matched word to the correct part."""
     counter = 0
     # id_fk = float(inverted_index[word][0])
     curr_doc_id = ""
     doc_data = []
-    # matched_docs = {}
+    matched_docs = {}
     # sliced = inverted_index[word][1:]
     for i in range(len(inverted_index_in[word][1:])):
         if counter % 3 == 0:
@@ -228,9 +206,13 @@ def find_matching_docs(word, inverted_index_in, matched_docs):
         elif counter % 3 == 2:
             doc_data.append(inverted_index_in[word][1:][i])
             if curr_doc_id in matched_docs:
-                matched_docs[curr_doc_id].extend(doc_data)
+                matched_docs[curr_doc_id].extend([x for x in doc_data])
             else:
-                matched_docs[curr_doc_id] = doc_data.copy()
+                matched_docs[curr_doc_id] = [x for x in doc_data]
             doc_data.clear()
         counter += 1
     return matched_docs
+
+
+
+
